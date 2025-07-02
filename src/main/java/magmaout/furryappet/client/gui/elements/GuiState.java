@@ -1,4 +1,4 @@
-package magmaout.furryappet.gui.elements;
+package magmaout.furryappet.client.gui.elements;
 
 import mchorse.mclib.client.gui.framework.elements.GuiElement;
 import mchorse.mclib.client.gui.framework.elements.input.GuiTextElement;

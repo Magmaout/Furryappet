@@ -1,4 +1,4 @@
-package magmaout.furryappet.gui.utils;
+package magmaout.furryappet.client.gui.utils;
 
 import mchorse.mclib.client.gui.framework.elements.list.GuiStringListElement;
 import mchorse.mclib.client.gui.utils.Icon;

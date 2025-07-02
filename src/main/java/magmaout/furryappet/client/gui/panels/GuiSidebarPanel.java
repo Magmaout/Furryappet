@@ -1,10 +1,9 @@
-package magmaout.furryappet.gui.panels;
+package magmaout.furryappet.client.gui.panels;
 
-import magmaout.furryappet.SaveHandler;
 import magmaout.furryappet.api.utils.AbstractData;
-import magmaout.furryappet.gui.GuiDashboard;
-import magmaout.furryappet.gui.utils.GuiFolderList;
-import magmaout.furryappet.gui.utils.GuiSearchElement;
+import magmaout.furryappet.client.gui.GuiDashboard;
+import magmaout.furryappet.client.gui.utils.GuiFolderList;
+import magmaout.furryappet.client.gui.utils.GuiSearchElement;
 import mchorse.mclib.client.gui.framework.GuiBase;
 import mchorse.mclib.client.gui.framework.elements.GuiElement;
 import mchorse.mclib.client.gui.framework.elements.GuiScrollElement;
@@ -17,7 +16,6 @@ import mchorse.mclib.client.gui.framework.elements.utils.GuiContext;
 import mchorse.mclib.client.gui.framework.elements.utils.GuiDraw;
 import mchorse.mclib.client.gui.framework.elements.utils.GuiDrawable;
 import mchorse.mclib.client.gui.mclib.GuiDashboardPanel;
-import mchorse.mclib.client.gui.utils.GuiUtils;
 import mchorse.mclib.client.gui.utils.Icons;
 import mchorse.mclib.client.gui.utils.keys.IKey;
 import net.minecraft.client.Minecraft;

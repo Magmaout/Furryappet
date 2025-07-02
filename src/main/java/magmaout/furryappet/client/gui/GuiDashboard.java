@@ -1,6 +1,6 @@
-package magmaout.furryappet.gui;
+package magmaout.furryappet.client.gui;
 
-import magmaout.furryappet.gui.panels.GuiStatesPanel;
+import magmaout.furryappet.client.gui.panels.GuiStatesPanel;
 import mchorse.mclib.client.gui.mclib.GuiAbstractDashboard;
 import mchorse.mclib.client.gui.mclib.GuiDashboardPanels;
 import mchorse.mclib.client.gui.utils.Icons;
