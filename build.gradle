@@ -71,7 +71,29 @@ processResources {
     }
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    doLast {
+        def targetDir = file("build/classes/java/main")
+        delete fileTree(targetDir) {
+            include '**/*'
+
+            exclude '**/*.class'
+        }
+
+        copy {
+            from "build/resources/main"
+            into targetDir
+        }
+    }
 }
+
+tasks.register('prepareAssets', Copy) {
+    group = 'build'
+
+    from 'build/resources/main'
+    into project.file('build/classes/java/main')
+}
+
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
