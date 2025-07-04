@@ -1,5 +1,6 @@
 package magmaout.furryappet;
 
+import magmaout.furryappet.api.states.StatesManager;
 import magmaout.furryappet.client.InputHandler;
 import magmaout.furryappet.client.RenderHandler;
 import net.minecraft.client.Minecraft;
@@ -20,11 +21,12 @@ public class Furryappet {
     }
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent ignored) {
+    public void preInit(FMLPreInitializationEvent event) {
         if (FMLCommonHandler.instance().getSide().isClient()) {
             InputHandler.register();
             RenderHandler.register();
-            SaveHandler.register();
         }
+        StatesManager.register();
+        SaveHandler.register();
     }
 }
