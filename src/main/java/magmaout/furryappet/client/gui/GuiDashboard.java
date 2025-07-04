@@ -4,7 +4,7 @@ import magmaout.furryappet.client.gui.panels.GuiStatesPanel;
 import mchorse.mclib.client.gui.mclib.GuiAbstractDashboard;
 import mchorse.mclib.client.gui.mclib.GuiDashboardPanels;
 import mchorse.mclib.client.gui.utils.Icons;
-import mchorse.mclib.client.gui.utils.keys.LangKey;
+import mchorse.mclib.client.gui.utils.keys.IKey;
 import net.minecraft.client.Minecraft;
 
 public class GuiDashboard extends GuiAbstractDashboard {
@@ -30,6 +30,6 @@ public class GuiDashboard extends GuiAbstractDashboard {
     protected void registerPanels(Minecraft mc) {
         states = new GuiStatesPanel(mc, this);
 
-        panels.registerPanel(states, new LangKey("States"), Icons.GEAR);
+        panels.registerPanel(states, IKey.lang("furryappet.gui.states"), Icons.FILE);
     }
 }
