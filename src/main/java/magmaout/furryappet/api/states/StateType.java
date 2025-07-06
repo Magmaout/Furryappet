@@ -35,7 +35,6 @@ public enum StateType {
         public Object fromNBT(NBTBase nbt, String name) {
             if (!(nbt instanceof NBTTagDouble))
                 throw new IllegalArgumentException("Expected NBTTagDouble, got " + nbt.getClass());
-
             return ((NBTTagDouble) nbt).getDouble();
         }
     },
@@ -58,9 +57,8 @@ public enum StateType {
         public NBTBase toNBT(Object object, String name) {
             ObjectStateEvent event = new ObjectStateEvent.Save(name, object, null);
             MinecraftForge.EVENT_BUS.post(event);
-            if (event.isCanceled()) {
-                return null;
-            }
+
+            if (event.isCanceled()) return null;
             return event.getTagCompound();
         }
 
@@ -68,9 +66,8 @@ public enum StateType {
         public Object fromNBT(NBTBase nbt, String name) {
             ObjectStateEvent event = new ObjectStateEvent.Load(name, null, nbt);
             MinecraftForge.EVENT_BUS.post(event);
-            if (event.isCanceled()) {
-                return null;
-            }
+
+            if (event.isCanceled()) return null;
             return event.getObject();
         }
     };
@@ -84,15 +81,14 @@ public enum StateType {
     public Class<?> getClassType() {
         return type;
     }
+
     protected void checkType(Object object) {
         if (!type.isInstance(object)) {
             throw new IllegalArgumentException("Expected " + type.getSimpleName() + ", got " + object.getClass());
         }
     }
-    @Nullable
+
     public abstract NBTBase toNBT(Object object, String name);
-    @Nullable
+
     public abstract Object fromNBT(NBTBase nbt, String name);
-
-
 }

@@ -81,7 +81,7 @@ public abstract class GuiAbstractSidebar extends GuiDashboardPanel<GuiDashboard>
         resize();
     }
 
-    private void sidebarListUpdate() {
+    public void sidebarListUpdate() {
         List<String> list = sidebarCreateList();
         int width = 25;
         for (String value : list)

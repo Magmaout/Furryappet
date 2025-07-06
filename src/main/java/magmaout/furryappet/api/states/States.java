@@ -4,10 +4,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.INBTSerializable;
 
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class States implements INBTSerializable<NBTTagCompound> {
@@ -38,50 +35,60 @@ public class States implements INBTSerializable<NBTTagCompound> {
         return getState(key, StateType.OBJECT);
     }
 
-    public Object getUnknownState(String key) {
-        State rawState = getRawState(key);
+    public List<String> getKeys() {
+        return new ArrayList<>(map.keySet());
+    }
+
+    public Object removeState(String key) {
+        State rawState = map.get(key);
+        map.remove(key);
         return rawState == null ? null : rawState.value;
     }
+
+    public Object getUnknownState(String key) {
+        State rawState = map.get(key);
+        return rawState == null ? null : rawState.value;
+    }
+
     public StateType getStateType(String key) {
-        State rawState = getRawState(key);
+        State rawState = map.get(key);
         return rawState == null ? null : rawState.type;
     }
 
     //use map directly only in downer methods, raw methods too
 
     public void setState(String key, StateType type, Object value) {
-        if(value == null) {
+        if (value == null) {
             setRawState(key, null);
             return;
         }
-        if(!type.getClassType().isInstance(value)) {
+
+        if (!type.getClassType().isInstance(value)) {
             throw new IllegalArgumentException("Value is not an instance of " + type.getClassType().getName());
         }
 
-        State rawState = getRawState(key);
-        if(rawState == null || !rawState.type.equals(type)) {
+        State rawState = map.get(key);
+        if (rawState == null || !rawState.type.equals(type)) {
            setRawState(key, new State(value, type));
            return;
         }
         rawState.value = value;
     }
+    
     public Object getState(String key, StateType type) {
-        State rawState = getRawState(key);
-        if(rawState == null || !rawState.type.equals(type)) {
-            return null;
-        }
+        State rawState = map.get(key);
+        if (rawState == null || !rawState.type.equals(type)) return null;
         return rawState.value;
     }
-    private State getRawState(String key) {
-        return map.get(key);
-    }
+
     private void setRawState(String key, State value) {
-        if(value == null) {
+        if (value == null) {
             map.remove(key);
             return;
         }
-        State existing = getRawState(key);
-        if(existing != null && existing.type.equals(value.type)) {
+
+        State existing = map.get(key);
+        if (existing != null && existing.type.equals(value.type)) {
             existing.value = value.value;
             return;
         }
@@ -91,13 +98,12 @@ public class States implements INBTSerializable<NBTTagCompound> {
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound tag = new NBTTagCompound();
-        for(Map.Entry<String, State> entry : map.entrySet()) {
+        for (Map.Entry<String, State> entry : map.entrySet()) {
             String key = entry.getKey();
             State state = entry.getValue();
             NBTBase serializedState = state.type.toNBT(state.value, key);
-            if(serializedState == null) {
-                continue;
-            }
+            if (serializedState == null) continue;
+
             NBTTagCompound nbtState = new NBTTagCompound();
             nbtState.setByte("type", (byte) state.type.ordinal());
             nbtState.setTag("data", serializedState);
@@ -115,8 +121,8 @@ public class States implements INBTSerializable<NBTTagCompound> {
 
             map.put(key, new State(value, type));
         }
-
     }
+
     private static class State {
         public Object value;
         public StateType type;

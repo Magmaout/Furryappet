@@ -1,5 +1,6 @@
 package magmaout.furryappet;
 
+import magmaout.furryappet.api.states.StatesManager;
 import magmaout.furryappet.client.InputHandler;
 import magmaout.furryappet.client.RenderHandler;
 import magmaout.furryappet.network.PacketWorldInfo;
@@ -14,6 +15,8 @@ public class Furryappet {
     public static final String TITLE = "Furryappet";
     public static final String MODID = "furryappet";
 
+    public static int FIELD_LENGTH = 32767;
+
     public static final AbstractDispatcher DISPATCHER = new AbstractDispatcher(Furryappet.MODID) {
         @Override
         public void register() {
@@ -27,6 +30,7 @@ public class Furryappet {
             InputHandler.register();
             RenderHandler.register();
         }
+        StatesManager.register();
         EventHandler.register();
         DISPATCHER.register();
     }

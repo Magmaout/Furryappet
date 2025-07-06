@@ -1,118 +1,107 @@
 package magmaout.furryappet.client.gui.elements;
 
+import magmaout.furryappet.Furryappet;
 import magmaout.furryappet.api.states.StateType;
+import magmaout.furryappet.api.states.States;
+import magmaout.furryappet.client.gui.utils.ColorPalette;
 import mchorse.mclib.client.gui.framework.elements.GuiElement;
 import mchorse.mclib.client.gui.framework.elements.buttons.GuiIconElement;
 import mchorse.mclib.client.gui.framework.elements.input.GuiTextElement;
 import mchorse.mclib.client.gui.framework.elements.input.GuiTrackpadElement;
+import mchorse.mclib.client.gui.framework.elements.utils.GuiLabel;
 import mchorse.mclib.client.gui.utils.Icons;
+import mchorse.mclib.client.gui.utils.keys.IKey;
 import net.minecraft.client.Minecraft;
 
-public class GuiState extends GuiElement
-{
+public class GuiState extends GuiElement {
     public GuiTextElement name;
     public GuiIconElement convert;
-    public GuiElement state;
+    public GuiElement value;
     public GuiIconElement remove;
 
-    public GuiState(Minecraft mc, String key, Object value, StateType type) {
+    public States states;
+    public String key;
+
+    public GuiState(Minecraft mc, String key, States states) {
         super(mc);
+        this.states = states;
+        this.key = key;
 
-        name = new GuiTextElement(mc, key, );
+        name = new GuiTextElement(mc, 1000, this::rename);
+        name.flex().w(120);
+        name.setText(key);
 
-        this.id = new GuiTextElement(mc, 1000, this::rename);
-        this.id.flex().w(120);
-        this.id.setText(key);
-        this.convert = new GuiIconElement(mc, Icons.REFRESH, this::convert);
-        this.remove = new GuiIconElement(mc, Icons.REMOVE, this::removeState);
+        convert = new GuiIconElement(mc, Icons.REFRESH, this::convert);
+        convert.flex().relative(name);
 
-        this.flex().row(0).preferred(2);
-        this.updateValue();
+        switch (states.getStateType(key)) {
+            case OBJECT:
+                value = new GuiLabel(mc, IKey.str(states.getUnknownState(key).toString()));
+                convert.setEnabled(false);
+            break;
+            case NBT:
+                convert.setEnabled(false);
+            case STRING:
+                value = new GuiTextElement(mc, Furryappet.FIELD_LENGTH, this::stringFieldUpdate);
+                ((GuiTextElement) value).setText(states.getUnknownState(key).toString());
+            break;
+            case NUMBER:
+                value = new GuiTrackpadElement(mc, this::numberTrackpadUpdate);
+                ((GuiTrackpadElement) value).setValue(states.getNumber(key));
+            break;
+        }
+        value.flex().relative(convert).w(240);
+
+        remove = new GuiIconElement(mc, Icons.REMOVE, this::remove);
+        remove.flex().relative(value);
+
+        flex().row(0).preferred(2);
+        add(name, convert, value, remove);
     }
 
-    public String name()
-    {
-        return name.;
+    public String getName() {
+        return name.field.getText();
     }
 
-    private void rename(String key)
-    {
-        if (this.states.values.containsKey(key) || key.isEmpty())
-        {
-            this.id.field.setTextColor(Colors.NEGATIVE);
-
+    private void rename(String key) {
+        if (states.getKeys().contains(key) || key.isEmpty()) {
+            name.field.setTextColor(ColorPalette.NEGATIVE);
             return;
         }
 
-        this.id.field.setTextColor(0xffffff);
-
-        Object value = this.states.values.remove(this.key);
-
-        this.states.values.put(key, value);
+        StateType type = states.getStateType(key);
+        Object value = states.removeState(key);
+        name.field.setTextColor(0xffffff);
+        states.setState(key, type, value);
         this.key = key;
     }
 
-    private void convert(GuiIconElement element)
-    {
-        Object object = this.states.values.get(this.key);
-
-        if (object instanceof String)
-        {
-            this.states.values.put(this.key, 0);
-        }
-        else
-        {
-            this.states.values.put(this.key, "");
-        }
-
-        this.updateValue();
-    }
-
-    private void removeState(GuiIconElement element)
-    {
-        this.states.values.remove(this.key);
-
-        GuiElement parent = this.getParentContainer();
-
-        this.removeFromParent();
-        parent.resize();
-    }
-
-    private void updateValue()
-    {
-        Object object = this.states.values.get(this.key);
-
-        if (object instanceof String)
-        {
-            GuiTextElement element = new GuiTextElement(this.mc, 10000, this::updateString);
-
-            element.setText((String) object);
-            this.value = element;
-        }
-        else
-        {
-            GuiTrackpadElement element = new GuiTrackpadElement(this.mc, this::updateNumber);
-
-            element.setValue(((Number) object).doubleValue());
-            this.value = element;
-        }
-
-        this.removeAll();
-        this.add(this.id, this.convert, this.value, this.remove);
-
-        if (this.hasParent())
-        {
-            this.getParentContainer().resize();
+    private void convert(GuiIconElement element) {
+        StateType type = states.getStateType(key);
+        if (type.equals(StateType.STRING)) {
+            double number = Double.parseDouble(states.getString(key));
+            value = new GuiTrackpadElement(mc, this::numberTrackpadUpdate);
+            ((GuiTrackpadElement) value).setValue(number);
+            states.setState(key, StateType.NUMBER, number);
+        } else if (type.equals(StateType.NUMBER)) {
+            String string = String.valueOf(states.getNumber(key));
+            value = new GuiTextElement(mc, this::stringFieldUpdate);
+            ((GuiTextElement) value).setText(string);
+            states.setState(key, StateType.STRING, string);
         }
     }
 
-    private void updateString(String s)
-    {
-        this.states.values.put(this.key, s);
+    private void remove(GuiIconElement icon) {
+        states.removeState(key);
+        removeFromParent();
+        getParentContainer().resize();
     }
 
-    private void updateNumber(double v)
-    {
-        this.states.values.put(this.key, v);
+    private void stringFieldUpdate(String string) {
+
+    }
+
+    private void numberTrackpadUpdate(Double number) {
+
     }
 }
