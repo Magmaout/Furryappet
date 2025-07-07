@@ -29,11 +29,11 @@ public class StatesCapability implements ICapabilitySerializable<NBTTagCompound>
 
     @Override
     public NBTTagCompound serializeNBT() {
-        return states.serializeNBT();
+        return states.toNBT(false);
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        states.deserializeNBT(nbt);
+        states.fromNBT(nbt, false);
     }
 }
