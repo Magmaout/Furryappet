@@ -6,18 +6,16 @@ import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.MinecraftForge;
 
-import javax.annotation.Nullable;
-
 public enum StateType {
     STRING(String.class) {
         @Override
-        public NBTBase toNBT(Object object, String name) {
+        public NBTBase toNBT(Object object, String name, boolean isClient) {
             checkType(object);
             return new NBTTagString((String) object);
         }
 
         @Override
-        public Object fromNBT(NBTBase nbt, String name) {
+        public Object fromNBT(NBTBase nbt, String name, boolean isClient) {
             if (!(nbt instanceof NBTTagString))
                 throw new IllegalArgumentException("Expected NBTTagString, got " + nbt.getClass());
             return ((NBTTagString) nbt).getString();
@@ -26,13 +24,13 @@ public enum StateType {
 
     NUMBER(Number.class) {
         @Override
-        public NBTBase toNBT(Object object, String name) {
+        public NBTBase toNBT(Object object, String name, boolean isClient) {
             checkType(object);
             return new NBTTagDouble((Double) object);
         }
 
         @Override
-        public Object fromNBT(NBTBase nbt, String name) {
+        public Object fromNBT(NBTBase nbt, String name, boolean isClient) {
             if (!(nbt instanceof NBTTagDouble))
                 throw new IllegalArgumentException("Expected NBTTagDouble, got " + nbt.getClass());
             return ((NBTTagDouble) nbt).getDouble();
@@ -41,29 +39,38 @@ public enum StateType {
 
     NBT(NBTBase.class) {
         @Override
-        public NBTBase toNBT(Object object, String name) {
+        public NBTBase toNBT(Object object, String name, boolean isClient) {
             checkType(object);
             return (NBTBase) object;
         }
 
         @Override
-        public Object fromNBT(NBTBase nbt, String name) {
+        public Object fromNBT(NBTBase nbt, String name, boolean isClient) {
             return nbt;
         }
     },
 
     OBJECT(Object.class) {
         @Override
-        public NBTBase toNBT(Object object, String name) {
-            ObjectStateEvent event = new ObjectStateEvent.Save(name, object, null);
-            MinecraftForge.EVENT_BUS.post(event);
+        public NBTBase toNBT(Object object, String name, boolean isClient) {
+            if(!isClient) {
+                ObjectStateEvent event = new ObjectStateEvent.Save(name, object, null);
+                MinecraftForge.EVENT_BUS.post(event);
 
-            if (event.isCanceled()) return null;
-            return event.getTagCompound();
+                if (event.isCanceled()) return null;
+                return event.getTagCompound();
+            }
+            if(object == null || object instanceof NBTBase) {
+                return null;
+            }
+            return new NBTTagString(object.toString());
         }
 
         @Override
-        public Object fromNBT(NBTBase nbt, String name) {
+        public Object fromNBT(NBTBase nbt, String name, boolean isClient) {
+            if(isClient) {
+                return nbt;
+            }
             ObjectStateEvent event = new ObjectStateEvent.Load(name, null, nbt);
             MinecraftForge.EVENT_BUS.post(event);
 
@@ -88,7 +95,7 @@ public enum StateType {
         }
     }
 
-    public abstract NBTBase toNBT(Object object, String name);
+    public abstract NBTBase toNBT(Object object, String name, boolean isClient);
 
-    public abstract Object fromNBT(NBTBase nbt, String name);
+    public abstract Object fromNBT(NBTBase nbt, String name, boolean isClient);
 }

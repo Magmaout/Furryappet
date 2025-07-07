@@ -13,12 +13,12 @@ public class StatesSavedData extends WorldSavedData {
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
-        states.deserializeNBT(nbt.getCompoundTag("states"));
+        states.fromNBT(nbt.getCompoundTag("states"), false);
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-       compound.setTag("states", states.serializeNBT());
+       compound.setTag("states", states.toNBT(false));
        return compound;
     }
 

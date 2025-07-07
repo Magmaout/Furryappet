@@ -47,12 +47,12 @@ public class StatesManager {
         CapabilityManager.INSTANCE.register(States.class, new Capability.IStorage<States>() {
             @Override
             public NBTBase writeNBT(Capability<States> capability, States instance, EnumFacing side) {
-                return instance.serializeNBT();
+                return instance.toNBT(false);
             }
 
             @Override
             public void readNBT(Capability<States> capability, States instance, EnumFacing side, NBTBase nbt) {
-                instance.deserializeNBT((NBTTagCompound) nbt);
+                instance.fromNBT((NBTTagCompound) nbt, false);
             }
         }, States::new);
 

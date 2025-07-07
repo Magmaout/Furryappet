@@ -2,12 +2,11 @@ package magmaout.furryappet.api.states;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.*;
 
 @SuppressWarnings("unused")
-public class States implements INBTSerializable<NBTTagCompound> {
+public class States {
     private final Map<String, State> map = new HashMap<>();
 
     public void setString(String key, String value) {
@@ -94,14 +93,12 @@ public class States implements INBTSerializable<NBTTagCompound> {
         }
         map.put(key, value);
     }
-
-    @Override
-    public NBTTagCompound serializeNBT() {
+    public NBTTagCompound toNBT(boolean isClient) {
         NBTTagCompound tag = new NBTTagCompound();
         for (Map.Entry<String, State> entry : map.entrySet()) {
             String key = entry.getKey();
             State state = entry.getValue();
-            NBTBase serializedState = state.type.toNBT(state.value, key);
+            NBTBase serializedState = state.type.toNBT(state.value, key, isClient);
             if (serializedState == null) continue;
 
             NBTTagCompound nbtState = new NBTTagCompound();
@@ -111,19 +108,17 @@ public class States implements INBTSerializable<NBTTagCompound> {
         }
         return tag;
     }
-
-    @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void fromNBT(NBTTagCompound nbt, boolean isClient) {
         for (String key : nbt.getKeySet()) {
             NBTTagCompound nbtState = (NBTTagCompound) nbt.getTag(key);
             StateType type = StateType.values()[nbtState.getByte("type")];
-            Object value = type.fromNBT(nbtState.getTag("data"), key);
+            Object value = type.fromNBT(nbtState.getTag("data"), key, isClient);
 
             map.put(key, new State(value, type));
         }
     }
 
-    private static class State {
+    protected static class State {
         public Object value;
         public StateType type;
 
