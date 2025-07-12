@@ -101,16 +101,17 @@ tasks.withType(JavaCompile).configureEach {
 
 sourceSets.main.resources.srcDir 'src/main/resources'
 
+tasks.withType(Jar).all { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+
 /* Dev build */
 task deobfJar(type: Jar) {
     from sourceSets.main.output
-    archiveBaseName = "dev"
-    //classifier = 'dev'
+    archiveClassifier = "dev"
 }
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
-    archiveBaseName = "sources"
+    archiveClassifier = "sources"
 }
 
 artifacts {
