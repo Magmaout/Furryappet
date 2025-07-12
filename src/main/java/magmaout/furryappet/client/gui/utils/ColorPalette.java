@@ -2,6 +2,8 @@ package magmaout.furryappet.client.gui.utils;
 
 public class ColorPalette {
     /* General purpose colors */
+    public static final int ENABLED = 0xe0e0e0;
+    public static final int DISABLED = 0x707070;
     public static final int ACTIVE = 0x0088ff;
     public static final int POSITIVE = 0x00ff44;
     public static final int NEGATIVE = 0xff0033;

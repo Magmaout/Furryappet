@@ -15,7 +15,7 @@ public class Furryappet {
     public static final String TITLE = "Furryappet";
     public static final String MODID = "furryappet";
 
-    public static int FIELD_LENGTH = 32767;
+    public static int STRING_LENGTH = 32767;
 
     public static final AbstractDispatcher DISPATCHER = new AbstractDispatcher(Furryappet.MODID) {
         @Override

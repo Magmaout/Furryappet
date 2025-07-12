@@ -12,6 +12,10 @@ import mchorse.mclib.client.gui.framework.elements.utils.GuiLabel;
 import mchorse.mclib.client.gui.utils.Icons;
 import mchorse.mclib.client.gui.utils.keys.IKey;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.JsonToNBT;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GuiState extends GuiElement {
     public GuiTextElement name;
@@ -27,81 +31,89 @@ public class GuiState extends GuiElement {
         this.states = states;
         this.key = key;
 
-        name = new GuiTextElement(mc, 1000, this::rename);
-        name.flex().w(120);
+        name = new GuiTextElement(mc, this::rename);
         name.setText(key);
-
-        convert = new GuiIconElement(mc, Icons.REFRESH, this::convert);
-        convert.flex().relative(name);
-
-        switch (states.getStateType(key)) {
-            case OBJECT:
-                value = new GuiLabel(mc, IKey.str(states.getUnknownState(key).toString()));
-                convert.setEnabled(false);
-            break;
-            case NBT:
-                convert.setEnabled(false);
-            case STRING:
-                value = new GuiTextElement(mc, Furryappet.FIELD_LENGTH, this::stringFieldUpdate);
-                ((GuiTextElement) value).setText(states.getUnknownState(key).toString());
-            break;
-            case NUMBER:
-                value = new GuiTrackpadElement(mc, this::numberTrackpadUpdate);
-                ((GuiTrackpadElement) value).setValue(states.getNumber(key));
-            break;
-        }
-        value.flex().relative(convert).w(240);
-
         remove = new GuiIconElement(mc, Icons.REMOVE, this::remove);
-        remove.flex().relative(value);
+        convert = new GuiIconElement(mc, Icons.REFRESH, this::convert);
 
-        flex().row(0).preferred(2);
-        add(name, convert, value, remove);
+        flex().row(0).preferred(0);
+        update();
     }
 
-    public String getName() {
+    public String name() {
         return name.field.getText();
     }
 
-    private void rename(String key) {
-        if (states.getKeys().contains(key) || key.isEmpty()) {
+    private void rename(String input) {
+        if (states.getKeys().contains(input) || input.isEmpty()) {
             name.field.setTextColor(ColorPalette.NEGATIVE);
             return;
         }
 
         StateType type = states.getStateType(key);
         Object value = states.removeState(key);
-        name.field.setTextColor(0xffffff);
-        states.setState(key, type, value);
-        this.key = key;
+        name.field.setTextColor(ColorPalette.ENABLED);
+        states.setState(input, type, value);
+        this.key = input;
     }
 
     private void convert(GuiIconElement element) {
         StateType type = states.getStateType(key);
         if (type.equals(StateType.STRING)) {
-            double number = Double.parseDouble(states.getString(key));
-            value = new GuiTrackpadElement(mc, this::numberTrackpadUpdate);
-            ((GuiTrackpadElement) value).setValue(number);
+            double number = 0;
+            String string = states.getString(key);
+            Pattern pattern = Pattern.compile("\\d+[.,]?\\d*");
+            Matcher matcher = pattern.matcher(string);
+            if (matcher.find()) {
+                string = matcher.group().replace(',', '.');
+                try { number = Double.parseDouble(string);
+                } catch (NumberFormatException e) {}
+            }
             states.setState(key, StateType.NUMBER, number);
         } else if (type.equals(StateType.NUMBER)) {
             String string = String.valueOf(states.getNumber(key));
-            value = new GuiTextElement(mc, this::stringFieldUpdate);
-            ((GuiTextElement) value).setText(string);
             states.setState(key, StateType.STRING, string);
         }
+        update();
     }
 
     private void remove(GuiIconElement icon) {
         states.removeState(key);
+        GuiElement parent = getParentContainer();
         removeFromParent();
-        getParentContainer().resize();
+        parent.resize();
     }
 
-    private void stringFieldUpdate(String string) {
-
+    private void update() {
+        switch (states.getStateType(key)) {
+            case OBJECT:
+                value = new GuiLabel(mc, IKey.str(states.getUnknownState(key).toString())).anchor(0.0f, 0.5f);
+                convert.setEnabled(false);
+            break;
+            case NBT:
+                convert.setEnabled(false);
+            case STRING:
+                value = new GuiTextElement(mc, Furryappet.STRING_LENGTH, this::write);
+                ((GuiTextElement) value).setText(states.getUnknownState(key).toString());
+                break;
+            case NUMBER:
+                value = new GuiTrackpadElement(mc, (number) -> states.setNumber(key, number));
+                ((GuiTrackpadElement) value).increment(1).setValue(states.getNumber(key));
+                break;
+        }
+        removeAll();
+        add(name, convert, value, remove);
+        if (hasParent()) getParentContainer().resize();
     }
 
-    private void numberTrackpadUpdate(Double number) {
-
+    private void write(String string) {
+        if (states.getStateType(key).equals(StateType.STRING)) {
+            states.setString(key, string);
+        } else if (states.getStateType(key).equals(StateType.NBT)) try {
+            ((GuiTextElement) value).field.setTextColor(ColorPalette.ENABLED);
+            states.setNBT(key, JsonToNBT.getTagFromJson(string));
+        } catch (Exception ignored) {
+            ((GuiTextElement) value).field.setTextColor(ColorPalette.NEGATIVE);
+        }
     }
 }

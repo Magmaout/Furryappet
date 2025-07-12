@@ -35,16 +35,31 @@ public abstract class GuiAbstractSidebar extends GuiDashboardPanel<GuiDashboard>
         super(mc, dashboard);
 
         sidebar = new GuiElement(mc);
-        sidebar.flex().relative(this).x(1f).w(20).h(1f).anchorX(1f);
+        sidebar.flex().relative(this)
+            .w(20).x(1.f).anchorX(1.f)
+            .h(1.f);
+
         sidebarToggle = new GuiElement(mc);
-        sidebarToggle.flex().relative(sidebar).x(-20).w(20).h(1f).column(0).stretch();
+        sidebarToggle.flex().relative(sidebar)
+            .w(20).anchorX(1.f)
+            .h(1.f)
+            .column(0).stretch();
 
         sidebarToggleIcon = new GuiIconElement(mc, Icons.RIGHTLOAD, this::sidebarToggle);
         sidebarToggle.add(sidebarToggleIcon);
 
+        main = new GuiElement(mc);
+        main.flex().relative(this)
+            .wTo(sidebarToggle.area)
+            .h(1.f);
+
         sidebarList = new GuiStringSearchListElement(mc, this::sidebarActionList);
-        sidebarList.flex().relative(sidebar).w(20).h(1f).column(0).stretch();
         sidebarList.label = IKey.lang("blockbuster.gui.search");
+        sidebarList.flex().relative(sidebar)
+            .w(20)
+            .h(1.f)
+            .column(0).stretch();
+
         sidebar.add(sidebarList);
 
         if (path != null) {
@@ -60,24 +75,20 @@ public abstract class GuiAbstractSidebar extends GuiDashboardPanel<GuiDashboard>
             sidebar.add(elementAdd, elementDupe, elementEdit, elementRemove);
         }
 
-        main = new GuiElement(mc);
-        main.flex().relative(this).wTo(sidebarToggle.area).h(1f);
-
         markContainer();
-        add(sidebar, sidebarToggle, main);
+        add(main, sidebar, sidebarToggle);
     }
 
     public void sidebarToggle(GuiIconElement icon) {
         icon.both(sidebar.isVisible() ? Icons.LEFTLOAD : Icons.RIGHTLOAD);
         sidebar.toggleVisible();
         if (sidebar.isVisible()) {
-            main.flex().wTo(sidebarToggle.area);
-            sidebarToggle.flex().relative(sidebar).x(-20);
+            sidebarToggle.flex().relative(sidebar).x(0.f);
             sidebarListUpdate();
         } else {
-            main.flex().wTo(sidebarToggle.area);
-            sidebarToggle.flex().relative(this).x(1, -20);
+            sidebarToggle.flex().relative(this).x(1.f);
         }
+        main.resize();
         resize();
     }
 
@@ -125,8 +136,6 @@ public abstract class GuiAbstractSidebar extends GuiDashboardPanel<GuiDashboard>
         sidebarToggle.area.draw(0x77000000);
         GuiDraw.drawHorizontalGradientRect(sidebarToggle.area.x - 6, sidebarToggle.area.y, sidebarToggle.area.x, sidebarToggle.area.ey(), 0, 0x29000000);
         if (sidebar.isVisible()) sidebar.area.draw(0xaa000000);
-
         super.draw(context);
-        if (!main.isEnabled()) GuiDraw.drawLockedArea(main);
     }
 }
