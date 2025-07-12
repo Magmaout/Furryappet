@@ -20,6 +20,7 @@ public class States {
     }
     public double getNumber(String key) {
         return (Double) getState(key, StateType.NUMBER);
+
     }
     public void setNBT(String key, NBTBase value) {
         setState(key, StateType.NBT, value);
@@ -33,25 +34,20 @@ public class States {
     public Object getObject(String key) {
         return getState(key, StateType.OBJECT);
     }
-
-    public List<String> getKeys() {
-        return new ArrayList<>(map.keySet());
+    public Set<String> getKeys() {
+        return map.keySet();
     }
 
     public Object removeState(String key) {
-        State rawState = map.get(key);
-        map.remove(key);
-        return rawState == null ? null : rawState.value;
+        return map.containsKey(key) ? map.remove(key).value : null;
     }
 
     public Object getUnknownState(String key) {
-        State rawState = map.get(key);
-        return rawState == null ? null : rawState.value;
+        return map.containsKey(key) ? map.get(key).value : null;
     }
 
     public StateType getStateType(String key) {
-        State rawState = map.get(key);
-        return rawState == null ? null : rawState.type;
+        return map.containsKey(key) ? map.get(key).type : null;
     }
 
     //use map directly only in downer methods, raw methods too
@@ -66,18 +62,16 @@ public class States {
             throw new IllegalArgumentException("Value is not an instance of " + type.getClassType().getName());
         }
 
-        State rawState = map.get(key);
-        if (rawState == null || !rawState.type.equals(type)) {
-           setRawState(key, new State(value, type));
-           return;
+        if (!map.containsKey(key) || !map.get(key).type.equals(type)) {
+            setRawState(key, new State(value, type));
+            return;
         }
-        rawState.value = value;
+        map.get(key).value = value;
     }
-    
-    public Object getState(String key, StateType type) {
-        State rawState = map.get(key);
-        if (rawState == null || !rawState.type.equals(type)) return null;
-        return rawState.value;
+
+    private Object getState(String key, StateType type) {
+        if (!map.containsKey(key) || !map.get(key).type.equals(type)) return null;
+        return map.get(key).value;
     }
 
     private void setRawState(String key, State value) {
