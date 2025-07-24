@@ -2,6 +2,7 @@ package magmaout.furryappet.api.data.capability;
 
 import magmaout.furryappet.api.data.DataAPI;
 import magmaout.furryappet.api.states.States;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -14,6 +15,10 @@ import javax.annotation.Nullable;
 public class FurryappetCapability implements ICapabilitySerializable<NBTTagCompound> {
     @CapabilityInject(DataAPI.FurryappetPlayerDataStorage.class)
     public static Capability<DataAPI.FurryappetPlayerDataStorage> FUR_CAP = null;
+    private final EntityPlayerMP player;
+    public FurryappetCapability(EntityPlayerMP owner) {
+        player = owner;
+    }
 
     public DataAPI.FurryappetPlayerDataStorage storage = new DataAPI.FurryappetPlayerDataStorage();
 
@@ -30,11 +35,14 @@ public class FurryappetCapability implements ICapabilitySerializable<NBTTagCompo
 
     @Override
     public NBTTagCompound serializeNBT() {
-        return storage.serializeNBT();
+        NBTTagCompound compound = new NBTTagCompound();
+        compound.setString("lastKnownName", player.getName());
+        compound.setTag("data", storage.serializeNBT());
+        return compound;
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        storage.deserializeNBT(nbt);
+        storage.deserializeNBT(nbt.getCompoundTag("data"));
     }
 }

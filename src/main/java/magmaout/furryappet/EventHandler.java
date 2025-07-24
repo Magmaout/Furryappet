@@ -28,7 +28,7 @@ public class EventHandler {
     @SubscribeEvent
     public void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof EntityPlayerMP) {
-            event.addCapability(new ResourceLocation(Furryappet.MODID, "uwu"), new FurryappetCapability());
+            event.addCapability(new ResourceLocation(Furryappet.MODID, "uwu"), new FurryappetCapability((EntityPlayerMP) event.getObject()));
         }
     }
 }
