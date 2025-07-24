@@ -1,0 +1,18 @@
+package magmaout.furryappet.api.data;
+
+import magmaout.furryappet.api.data.capability.FurryappetCapability;
+import net.minecraft.entity.player.EntityPlayerMP;
+
+import java.util.function.Supplier;
+
+public class PlayerContainer<T extends INBTData> {
+    protected final Supplier<T> instanceCreator;
+
+    protected PlayerContainer(Supplier<T> instanceCreator) {
+        this.instanceCreator = instanceCreator;
+    }
+    public T getData(EntityPlayerMP player) {
+        if (player == null) return null;
+        return player.getCapability(FurryappetCapability.FUR_CAP, null).getDataForContainer(this);
+    }
+}

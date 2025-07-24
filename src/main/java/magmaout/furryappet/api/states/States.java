@@ -1,13 +1,16 @@
 package magmaout.furryappet.api.states;
 
+import magmaout.furryappet.api.data.IDirtyCheck;
+import magmaout.furryappet.api.data.INBTData;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.*;
 
 @SuppressWarnings("unused")
-public class States {
+public class States implements INBTData, IDirtyCheck {
     private final Map<String, State> map = new HashMap<>();
+    private int lastHash = 0;
 
     public void setString(String key, String value) {
         setState(key, StateType.STRING, value);
@@ -34,6 +37,8 @@ public class States {
     public Object getObject(String key) {
         return getState(key, StateType.OBJECT);
     }
+
+    //use map directly only in downer methods, raw methods too
     public Set<String> getKeys() {
         return map.keySet();
     }
@@ -49,8 +54,6 @@ public class States {
     public StateType getStateType(String key) {
         return map.containsKey(key) ? map.get(key).type : null;
     }
-
-    //use map directly only in downer methods, raw methods too
 
     public void setState(String key, StateType type, Object value) {
         if (value == null) {
@@ -102,7 +105,7 @@ public class States {
         }
         return tag;
     }
-    public void fromNBT(NBTTagCompound nbt, boolean isClient) {
+    public States fromNBT(NBTTagCompound nbt, boolean isClient) {
         for (String key : nbt.getKeySet()) {
             NBTTagCompound nbtState = (NBTTagCompound) nbt.getTag(key);
             StateType type = StateType.values()[nbtState.getByte("type")];
@@ -110,6 +113,32 @@ public class States {
 
             map.put(key, new State(value, type));
         }
+        return this;
+    }
+
+    @Override
+    public NBTBase toNBT() {
+        return toNBT(false);
+    }
+
+    @Override
+    public void fromNBT(NBTBase nbt) {
+        fromNBT((NBTTagCompound) nbt, false);
+    }
+
+    @Override
+    public boolean isValid(NBTBase nbt) {
+        return nbt instanceof NBTTagCompound;
+    }
+
+    @Override
+    public boolean isDirty() {
+        return lastHash != hashCode();
+    }
+
+    @Override
+    public void markClean() {
+        lastHash = hashCode();
     }
 
     protected static class State {

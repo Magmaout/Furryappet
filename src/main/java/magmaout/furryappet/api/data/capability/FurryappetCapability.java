@@ -1,5 +1,6 @@
-package magmaout.furryappet.api.states.save;
+package magmaout.furryappet.api.data.capability;
 
+import magmaout.furryappet.api.data.DataAPI;
 import magmaout.furryappet.api.states.States;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -10,30 +11,30 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class StatesCapability implements ICapabilitySerializable<NBTTagCompound> {
-    @CapabilityInject(States.class)
-    public static Capability<States> STATES = null;
+public class FurryappetCapability implements ICapabilitySerializable<NBTTagCompound> {
+    @CapabilityInject(DataAPI.FurryappetPlayerDataStorage.class)
+    public static Capability<DataAPI.FurryappetPlayerDataStorage> FUR_CAP = null;
 
-    public States states = new States();
+    public DataAPI.FurryappetPlayerDataStorage storage = new DataAPI.FurryappetPlayerDataStorage();
 
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == STATES;
+        return capability == FUR_CAP;
     }
 
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        return capability == STATES ? STATES.cast(states) : null;
+        return capability == FUR_CAP ? FUR_CAP.cast(storage) : null;
     }
 
     @Override
     public NBTTagCompound serializeNBT() {
-        return states.toNBT(false);
+        return storage.serializeNBT();
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        states.fromNBT(nbt, false);
+        storage.deserializeNBT(nbt);
     }
 }
