@@ -18,7 +18,7 @@ import java.util.Set;
 
     public ScriptsAPI() {
         loadedScripts = new HashMap<>();
-        scripts = Furryappet.furryappetAPIManager.getDataAPI().registerFilesContainer("scripts", Script::new);
+        scripts = Furryappet.APIManager.getDataAPI().registerFilesContainer("scripts", Script::new);
         errorManager = new ErrorManager();
 
         for (String scriptName : scripts.getDataNames()) {

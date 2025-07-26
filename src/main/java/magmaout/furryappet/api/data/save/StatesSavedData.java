@@ -1,25 +1,25 @@
-package magmaout.furryappet.api.states.save;
+package magmaout.furryappet.api.data.save;
 
 import magmaout.furryappet.api.states.States;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.storage.WorldSavedData;
 
 public class StatesSavedData extends WorldSavedData {
+    public static final String ID = "states";
     public States states = new States();
     private int lastHash = 0;
-    public StatesSavedData(String name) {
-        super(name);
+    public StatesSavedData() {
+        super(ID);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        states.fromNBT(nbt.getCompoundTag("states"), false);
+    public void readFromNBT(NBTTagCompound tag) {
+        states.fromNBT(tag, false);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-       compound.setTag("states", states.toNBT(false));
-       return compound;
+    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+        return states.toNBT(false);
     }
 
     @Override
@@ -29,8 +29,6 @@ public class StatesSavedData extends WorldSavedData {
 
     @Override
     public void setDirty(boolean isDirty) {
-        if(!isDirty) {
-            lastHash = states.hashCode();
-        }
+        if (!isDirty) lastHash = states.hashCode();
     }
 }

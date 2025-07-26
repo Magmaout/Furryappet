@@ -2,6 +2,7 @@ package magmaout.furryappet.client;
 
 import magmaout.furryappet.Furryappet;
 import magmaout.furryappet.client.gui.GuiDashboard;
+import magmaout.furryappet.network.Dispatcher;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,7 +24,9 @@ public class InputHandler {
     @SubscribeEvent
     public void trigger(InputEvent.KeyInputEvent event) {
         Minecraft mc = Minecraft.getMinecraft();
-        if (DASHBOARD.isKeyDown() && mc.playerController.isInCreativeMode())
+        if (DASHBOARD.isKeyDown() && mc.playerController.isInCreativeMode()) {
             mc.displayGuiScreen(GuiDashboard.get(mc));
+            //Dispatcher.INSTANCE.sendToServer(new DashboardPacket());
+        }
     }
 }

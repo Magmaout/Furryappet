@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FurryappetAPIManager {
+public class APIManager {
     private final Map<String, BaseAPI> apis = new HashMap<>();
 
     private DataAPI dataAPI;

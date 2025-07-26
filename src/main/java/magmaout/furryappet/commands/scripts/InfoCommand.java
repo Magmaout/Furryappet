@@ -29,7 +29,7 @@ public class InfoCommand extends McCommandBase {
 
     @Override
     public void executeCommand(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        ScriptsAPI scriptsAPI = (ScriptsAPI) Furryappet.furryappetAPIManager.getAPI("scripts");
+        ScriptsAPI scriptsAPI = (ScriptsAPI) Furryappet.APIManager.getAPI("scripts");
         sender.sendMessage(new TextComponentString("Scripts info: "));
         for (String script : scriptsAPI.getScriptStorage().getDataNames()) {
             LoadedScript loadedScript = scriptsAPI.getLoadedScript(script);
@@ -57,6 +57,6 @@ public class InfoCommand extends McCommandBase {
         if(args.length > 1) {
             return super.getTabCompletions(server, sender, args, targetPos);
         }
-        return new ArrayList<>(Furryappet.furryappetAPIManager.getScriptsAPI().getScriptStorage().getDataNames());
+        return new ArrayList<>(Furryappet.APIManager.getScriptsAPI().getScriptStorage().getDataNames());
     }
 }

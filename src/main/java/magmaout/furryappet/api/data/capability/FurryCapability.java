@@ -1,7 +1,6 @@
 package magmaout.furryappet.api.data.capability;
 
 import magmaout.furryappet.api.data.DataAPI;
-import magmaout.furryappet.api.states.States;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -11,11 +10,11 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class FurryappetCapability implements ICapabilitySerializable<NBTTagCompound> {
-    @CapabilityInject(DataAPI.FurryappetPlayerDataStorage.class)
-    public static Capability<DataAPI.FurryappetPlayerDataStorage> FUR_CAP = null;
+public class FurryCapability implements ICapabilitySerializable<NBTTagCompound> {
+    @CapabilityInject(DataAPI.FurryDataStorage.class)
+    public static Capability<DataAPI.FurryDataStorage> FUR_CAP = null;
 
-    public DataAPI.FurryappetPlayerDataStorage storage = new DataAPI.FurryappetPlayerDataStorage();
+    public DataAPI.FurryDataStorage storage = new DataAPI.FurryDataStorage();
 
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {

@@ -1,6 +1,6 @@
 package magmaout.furryappet.api.data;
 
-import magmaout.furryappet.api.data.capability.FurryappetCapability;
+import magmaout.furryappet.api.data.capability.FurryCapability;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.util.function.Supplier;
@@ -13,6 +13,6 @@ public class PlayerContainer<T extends INBTData> {
     }
     public T getData(EntityPlayerMP player) {
         if (player == null) return null;
-        return player.getCapability(FurryappetCapability.FUR_CAP, null).getDataForContainer(this);
+        return player.getCapability(FurryCapability.FUR_CAP, null).getDataForContainer(this);
     }
 }

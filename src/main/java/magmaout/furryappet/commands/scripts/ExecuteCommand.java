@@ -37,7 +37,7 @@ public class ExecuteCommand extends McCommandBase {
 
     @Override
     public void executeCommand(MinecraftServer minecraftServer, ICommandSender iCommandSender, String[] args) throws CommandException {
-        ScriptsAPI scripts = (ScriptsAPI) Furryappet.furryappetAPIManager.getAPI("scripts");
+        ScriptsAPI scripts = (ScriptsAPI) Furryappet.APIManager.getAPI("scripts");
         LoadedScript loadedScript = scripts.getLoadedScript(args[0]);
         String function = args.length > 1 ? args[1] : "main";
         if(loadedScript == null) {
@@ -59,10 +59,10 @@ public class ExecuteCommand extends McCommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if(args.length == 0) {
-            return new ArrayList<>(Furryappet.furryappetAPIManager.getScriptsAPI().getScriptStorage().getDataNames());
+            return new ArrayList<>(Furryappet.APIManager.getScriptsAPI().getScriptStorage().getDataNames());
         }
         if(args.length == 1) {
-            return new ArrayList<>(Furryappet.furryappetAPIManager.getScriptsAPI().getLoadedScript(args[0]).getFunctions());
+            return new ArrayList<>(Furryappet.APIManager.getScriptsAPI().getLoadedScript(args[0]).getFunctions());
         }
         return super.getTabCompletions(server, sender, args, targetPos);
     }

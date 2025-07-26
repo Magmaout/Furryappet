@@ -2,7 +2,6 @@ package magmaout.furryappet.commands.states;
 
 import magmaout.furryappet.Furryappet;
 import magmaout.furryappet.api.states.States;
-import magmaout.furryappet.api.states.StatesAPI;
 import mchorse.mclib.commands.McCommandBase;
 import mchorse.mclib.commands.utils.L10n;
 import net.minecraft.command.CommandException;
@@ -30,11 +29,11 @@ public class ListCommand extends McCommandBase {
     @Override
     public void executeCommand(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if(args[0].equals("~")) {
-            printStates("~", Furryappet.furryappetAPIManager.getStatesAPI().getServerStates(), sender);
+            printStates("~", Furryappet.APIManager.getStatesAPI().getServerStates(), sender);
             return;
         }
         EntityPlayerMP player = server.getPlayerList().getPlayerByUsername(args[0]);
-        printStates(player.getName(), Furryappet.furryappetAPIManager.getStatesAPI().getPlayerStates(player), sender);
+        printStates(player.getName(), Furryappet.APIManager.getStatesAPI().getPlayerStates(player), sender);
     }
     private void printStates(String name, States states, ICommandSender sender) {
         StringBuilder builder = new StringBuilder("States for " + name + ":\n");

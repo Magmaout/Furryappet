@@ -105,9 +105,10 @@ public class States implements INBTData, IDirtyCheck {
         }
         return tag;
     }
-    public States fromNBT(NBTTagCompound nbt, boolean isClient) {
-        for (String key : nbt.getKeySet()) {
-            NBTTagCompound nbtState = (NBTTagCompound) nbt.getTag(key);
+    public States fromNBT(NBTTagCompound tag, boolean isClient) {
+        if (tag == null) return null;
+        for (String key : tag.getKeySet()) {
+            NBTTagCompound nbtState = (NBTTagCompound) tag.getTag(key);
             StateType type = StateType.values()[nbtState.getByte("type")];
             Object value = type.fromNBT(nbtState.getTag("data"), key, isClient);
 
