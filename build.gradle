@@ -4,6 +4,7 @@ plugins {
 }
 
 base {
+    version = "5.0.07"
     archivesName = rootProject.name
 }
 
