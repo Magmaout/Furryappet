@@ -1,6 +1,5 @@
 package magmaout.furryappet.api.data;
 
-import magmaout.furryappet.api.scripts.Script;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -54,9 +53,10 @@ public class FilesContainer<T extends INBTData & IDirtyCheck & INamedData> {
         return datas.get(name);
     }
     public boolean createData(String name) {
-        if (!datas.containsKey(name)) return false;
-        datas.put(name, instanceCreator.get());
-        return saveData(name);
+        if (datas.containsKey(name)) return false;
+        T data = instanceCreator.get();
+        data.setName(name);
+        return saveData(data);
     }
     public boolean deleteData(String name) {
         datas.remove(name);
@@ -72,24 +72,23 @@ public class FilesContainer<T extends INBTData & IDirtyCheck & INamedData> {
         T copy = instanceCreator.get();
         copy.fromNBT(original.toNBT());
         copy.setName(newName);
-        datas.put(newName, copy);
-        return saveData(newName);
+        return saveData(copy);
     }
     public boolean renameData(String oldName, String newName) {
         if (!datas.containsKey(oldName) || datas.containsKey(newName)) return false;
 
-        T script = datas.remove(oldName);
+        T oldData = datas.remove(oldName);
         datasTimestamps.remove(oldName);
 
         File oldFile = baseDir.resolve(oldName + ".dat").toFile();
         File newFile = baseDir.resolve(newName + ".dat").toFile();
 
         if (oldFile.exists() && oldFile.renameTo(newFile)) {
-            script.setName(newName);
-            datas.put(newName, script);
+            oldData.setName(newName);
+            datas.put(newName, oldData);
             return saveData(newName);
         } else {
-            datas.put(oldName, script);
+            datas.put(oldName, oldData);
             return false;
         }
     }
@@ -98,7 +97,7 @@ public class FilesContainer<T extends INBTData & IDirtyCheck & INamedData> {
     }
 
     protected void checkChanges() {
-        for (Map.Entry<String, T> entry : datas.entrySet()) {
+        for (Map.Entry<String, T> entry : new HashSet<>(datas.entrySet())) {
             T data = entry.getValue();
             if (data.isDirty()) {
                 saveData(data.getName());
@@ -138,6 +137,15 @@ public class FilesContainer<T extends INBTData & IDirtyCheck & INamedData> {
             throw new RuntimeException("Datas load error", e);
         }
     }
+    protected boolean saveData(T data) {
+        if(data == null) return false;
+        try {
+            saveFile(baseDir.resolve(data.getName() + ".dat"), data);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
     protected boolean saveData(String name) {
         T data = getData(name);
         if(data == null) return false;
@@ -169,7 +177,7 @@ public class FilesContainer<T extends INBTData & IDirtyCheck & INamedData> {
         return data;
     }
     private void saveFile(Path path, T data) throws IOException {
-        NBTTagCompound nbt = (NBTTagCompound) data.toNBT();
+        NBTTagCompound nbt = data.toNBT();
         CompressedStreamTools.write(nbt, new DataOutputStream(Files.newOutputStream(path)));
         data.markClean();
         datas.put(data.getName(), data);

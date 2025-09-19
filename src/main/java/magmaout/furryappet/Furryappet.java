@@ -35,6 +35,7 @@ public class Furryappet {
         if (FMLCommonHandler.instance().getSide().isClient()) {
             InputHandler.register();
             RenderHandler.register();
+            magmaout.furryappet.client.api.EventHandler.register();
         }
         Dispatcher.INSTANCE.register();
         EventHandler.register();

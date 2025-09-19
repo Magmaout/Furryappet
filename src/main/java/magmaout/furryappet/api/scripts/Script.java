@@ -3,7 +3,6 @@ package magmaout.furryappet.api.scripts;
 import magmaout.furryappet.api.data.IDirtyCheck;
 import magmaout.furryappet.api.data.INBTData;
 import magmaout.furryappet.api.data.INamedData;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class Script implements INBTData, IDirtyCheck, INamedData {
@@ -13,7 +12,7 @@ public class Script implements INBTData, IDirtyCheck, INamedData {
     private int lastHash = -1;
 
     @Override
-    public NBTBase toNBT() {
+    public NBTTagCompound toNBT() {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
         nbtTagCompound.setString("name", name);
         nbtTagCompound.setString("code", code);
@@ -21,14 +20,14 @@ public class Script implements INBTData, IDirtyCheck, INamedData {
     }
 
     @Override
-    public void fromNBT(NBTBase nbt) {
-        this.name = ((NBTTagCompound) nbt).getString("name");
-        this.code = ((NBTTagCompound) nbt).getString("code");
+    public void fromNBT(NBTTagCompound nbt) {
+        this.name = nbt.getString("name");
+        this.code = nbt.getString("code");
     }
 
     @Override
-    public boolean isValid(NBTBase nbt) {
-        return nbt instanceof NBTTagCompound && !((NBTTagCompound) nbt).getString("name").isEmpty() && !((NBTTagCompound) nbt).getString("code").isEmpty();
+    public boolean isValid(NBTTagCompound nbt) {
+        return !nbt.getString("name").isEmpty() && !nbt.getString("code").isEmpty();
     }
 
     @Override

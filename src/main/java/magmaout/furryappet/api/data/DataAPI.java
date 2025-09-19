@@ -2,8 +2,9 @@ package magmaout.furryappet.api.data;
 
 import magmaout.furryappet.Furryappet;
 import magmaout.furryappet.api.BaseAPI;
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import java.util.function.Supplier;
 
 public class DataAPI extends BaseAPI {
     private final HashMap<String, FilesContainer> fileContainers = new HashMap<>();
-    private final HashMap<String, PlayerContainer<? extends INBTData>> playerContainers = new HashMap<>();
+    private final HashMap<String, PlayerContainer> playerContainers = new HashMap<>();
 
     private volatile Throwable lastTimerError = null;
 
@@ -30,6 +31,19 @@ public class DataAPI extends BaseAPI {
         fileContainers.put(subDir, filesContainer);
         return filesContainer;
     }
+
+    public <T extends INBTData> PlayerContainer<T> getPlayerContainer(String containerID) {
+        if (!playerContainers.containsKey(containerID))
+            throw new RuntimeException("Container with id " + containerID + " does not exist");
+
+        return playerContainers.get(containerID);
+    }
+    public <T extends INBTData & IDirtyCheck & INamedData> FilesContainer<T> getFilesContainer(String containerID) {
+        if (!fileContainers.containsKey(containerID))
+            throw new RuntimeException("Container with id " + containerID + " does not exist");
+
+        return fileContainers.get(containerID);
+    }
     public <T extends INBTData> PlayerContainer<T> registerPlayerContainer(String containerID, Supplier<T> instanceCreator) {
         if (playerContainers.containsKey(containerID))
             throw new RuntimeException("Container with id " + containerID + " already exists");
@@ -38,10 +52,29 @@ public class DataAPI extends BaseAPI {
         playerContainers.put(containerID, playerContainer);
         return playerContainer;
     }
+    public <T extends INBTData & IDirtyCheck> SyncContainer<T> registerSyncPlayerContainer(String containerID, Supplier<T> instanceCreator) {
+        if (playerContainers.containsKey(containerID))
+            throw new RuntimeException("Container with id " + containerID + " already exists");
+
+        SyncContainer<T> playerContainer = new SyncContainer<>(instanceCreator, containerID);
+        playerContainers.put(containerID, playerContainer);
+        return playerContainer;
+    }
 
     @Override
     public void update() {
         if (lastTimerError != null) throw new RuntimeException("Exception in background container check", lastTimerError);
+        playerContainers.forEach((id, container) -> {
+            if(container instanceof SyncContainer) {
+                for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
+                    IDirtyCheck data = ((SyncContainer<? extends IDirtyCheck>) container).getData(player);
+                    if(data.isDirty()) {
+                        data.markClean();
+                        ((SyncContainer<? extends IDirtyCheck>) container).sync(player);
+                    }
+                }
+            }
+        });
     }
 
     private static class ContainerCheckerTask extends TimerTask {
@@ -73,7 +106,7 @@ public class DataAPI extends BaseAPI {
 
         public NBTTagCompound serializeNBT() {
             NBTTagCompound compound = new NBTTagCompound();
-            for (Map.Entry<String, PlayerContainer<? extends INBTData>> entry : Furryappet.APIManager.getDataAPI().playerContainers.entrySet()) {
+            for (Map.Entry<String, PlayerContainer> entry : Furryappet.APIManager.getDataAPI().playerContainers.entrySet()) {
                 String key = entry.getKey();
                 PlayerContainer<? extends INBTData> container = entry.getValue();
                 if(!map.containsKey(container)){
@@ -90,7 +123,7 @@ public class DataAPI extends BaseAPI {
                 PlayerContainer<? extends INBTData> container = Furryappet.APIManager.getDataAPI().playerContainers.get(key);
                 if (container == null) continue;
 
-                NBTBase tag = nbt.getTag(key);
+                NBTTagCompound tag = (NBTTagCompound) nbt.getTag(key);
                 INBTData data = container.instanceCreator.get();
                 data.fromNBT(tag);
 

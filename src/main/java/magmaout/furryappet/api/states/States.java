@@ -22,7 +22,8 @@ public class States implements INBTData, IDirtyCheck {
         setState(key, StateType.NUMBER, value);
     }
     public double getNumber(String key) {
-        return (Double) getState(key, StateType.NUMBER);
+        Double state = (Double) getState(key, StateType.NUMBER);
+        return state == null ? 0 : state;
 
     }
     public void setNBT(String key, NBTBase value) {
@@ -118,18 +119,18 @@ public class States implements INBTData, IDirtyCheck {
     }
 
     @Override
-    public NBTBase toNBT() {
+    public NBTTagCompound toNBT() {
         return toNBT(false);
     }
 
     @Override
-    public void fromNBT(NBTBase nbt) {
-        fromNBT((NBTTagCompound) nbt, false);
+    public void fromNBT(NBTTagCompound nbt) {
+        fromNBT(nbt, false);
     }
 
     @Override
-    public boolean isValid(NBTBase nbt) {
-        return nbt instanceof NBTTagCompound;
+    public boolean isValid(NBTTagCompound nbt) {
+        return true;
     }
 
     @Override

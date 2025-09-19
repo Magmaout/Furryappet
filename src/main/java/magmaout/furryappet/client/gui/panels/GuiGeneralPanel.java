@@ -5,7 +5,6 @@ import magmaout.furryappet.api.states.States;
 import magmaout.furryappet.client.gui.GuiDashboard;
 import magmaout.furryappet.client.gui.elements.GuiStatesEditor;
 import magmaout.furryappet.client.gui.utils.GuiAbstractSidebar;
-import magmaout.furryappet.network.PacketWorldInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,7 +49,6 @@ public class GuiGeneralPanel extends GuiAbstractSidebar {
     @Override
     protected List<String> sidebarCreateList() {
         List<String> list = Lists.newArrayList();
-        list.add(PacketWorldInfo.NAME);
         list.addAll(
             mc.world.playerEntities.stream()
             .map(EntityPlayer::getName)

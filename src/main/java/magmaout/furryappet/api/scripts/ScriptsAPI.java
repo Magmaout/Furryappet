@@ -1,6 +1,6 @@
  package magmaout.furryappet.api.scripts;
 
-import magmaout.furryappet.Furryappet;
+import magmaout.furryappet.api.APIManager;
 import magmaout.furryappet.api.BaseAPI;
 import magmaout.furryappet.api.data.FilesContainer;
 import magmaout.furryappet.api.scripts.engine.ErrorManager;
@@ -16,9 +16,9 @@ import java.util.Set;
     private final FilesContainer<Script> scripts;
     private final ErrorManager errorManager;
 
-    public ScriptsAPI() {
+    public ScriptsAPI(APIManager api) {
         loadedScripts = new HashMap<>();
-        scripts = Furryappet.APIManager.getDataAPI().registerFilesContainer("scripts", Script::new);
+        scripts = api.getDataAPI().registerFilesContainer("scripts", Script::new);
         errorManager = new ErrorManager();
 
         for (String scriptName : scripts.getDataNames()) {
@@ -41,7 +41,7 @@ import java.util.Set;
             return false;
         }
         try {
-            loadedScripts.put(name, new LoadedScript(script.name, script.code, this));
+            loadedScripts.put(name, new LoadedScript(script.name, script.code));
         } catch (FurryappetCompileException e) {
             errorManager.setCompileError(name, e);
             return false;

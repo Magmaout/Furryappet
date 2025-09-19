@@ -1,10 +1,11 @@
-package magmaout.furryappet.network;
+package magmaout.furryappet.network.api.states;
 
 import io.netty.buffer.ByteBuf;
 import magmaout.furryappet.Furryappet;
 import magmaout.furryappet.api.states.States;
 import magmaout.furryappet.api.states.StatesAPI;
 import magmaout.furryappet.client.gui.GuiDashboard;
+import magmaout.furryappet.network.Dispatcher;
 import mchorse.mclib.network.AbstractMessageHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -31,7 +32,7 @@ public class StatesPacket extends AbstractMessageHandler<StatesPacket> implement
     @Override
     public IMessage handleClientMessage(StatesPacket message) {
         GuiDashboard dashboard = GuiDashboard.get(Minecraft.getMinecraft());
-        dashboard.general.statesEditor.setupStates(message.owner, message.states);
+        dashboard.general.statesEditor.setupStates(message.states);
         return null;
     }
 

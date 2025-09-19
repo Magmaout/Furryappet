@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ErrorManager {
+    //TODO make something with this
     private final Map<String, FurryappetCompileException> compileExceptions = new HashMap<>();
     public void setCompileError(String script, FurryappetCompileException exception) {
         if(exception == null) {

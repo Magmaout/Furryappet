@@ -1,5 +1,8 @@
 package magmaout.furryappet.client;
 
+import magmaout.furryappet.client.api.ClientAPIManager;
+import mchorse.mclib.McLib;
+import mchorse.mclib.events.RenderOverlayEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,6 +21,7 @@ public class RenderHandler {
 
     public static void register() {
         MinecraftForge.EVENT_BUS.register(new RenderHandler());
+        McLib.EVENT_BUS.register(new RenderHandler());
     }
 
     @SubscribeEvent
@@ -56,4 +60,12 @@ public class RenderHandler {
             GlStateManager.enableTexture2D();
         }
     }
+    @SubscribeEvent
+    public void onRenderGuiOverlay(RenderOverlayEvent.Pre event) {
+        if(ClientAPIManager.getInstance() == null) {
+            return;
+        }
+        ClientAPIManager.getInstance().getHUDsAPI().renderHUDScene(event.mc.getRenderPartialTicks(), event.resolution);
+    }
+
 }

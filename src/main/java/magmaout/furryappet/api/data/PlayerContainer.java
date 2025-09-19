@@ -13,6 +13,7 @@ public class PlayerContainer<T extends INBTData> {
     }
     public T getData(EntityPlayerMP player) {
         if (player == null) return null;
-        return player.getCapability(FurryCapability.FUR_CAP, null).getDataForContainer(this);
+        DataAPI.FurryDataStorage capability = player.getCapability(FurryCapability.FUR_CAP, null);
+        return capability == null ? null : capability.getDataForContainer(this);
     }
 }

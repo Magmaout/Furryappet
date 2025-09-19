@@ -4,7 +4,6 @@ import jdk.nashorn.api.scripting.NashornScriptEngine;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import jdk.nashorn.internal.runtime.ECMAErrors;
 import jdk.nashorn.internal.runtime.ScriptFunctionData;
-import magmaout.furryappet.api.scripts.ScriptsAPI;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
@@ -16,11 +15,9 @@ import java.util.Set;
 public class LoadedScript {
     private static final NashornScriptEngineFactory scriptEngineManager = new NashornScriptEngineFactory();
     public final String name;
-    private final ScriptsAPI api;
     public final NashornScriptEngine engine;
-    public LoadedScript(String name, String code, ScriptsAPI api) throws FurryappetCompileException {
+    public LoadedScript(String name, String code) throws FurryappetCompileException {
         this.name = name;
-        this.api = api;
 
         NashornScriptEngine engine = (NashornScriptEngine) scriptEngineManager.getScriptEngine("--language=es6", "-scripting");
 
@@ -48,7 +45,6 @@ public class LoadedScript {
         } catch (NoSuchMethodException e) {
             throw new FurryappetScriptException("Method " + function + " is not found in script " + this.name);
         } catch (ScriptException e) {
-
             FurryappetScriptException exception = new FurryappetScriptException(e.getMessage());
             exception.setStackTrace(e.getCause().getStackTrace());
             simplifyStackTrace(exception);
@@ -83,6 +79,9 @@ public class LoadedScript {
     }
 
     public Set<String> getFunctions() {
-        return (Set<String>) engine.getBindings(ScriptContext.ENGINE_SCOPE);
+        Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+
+
+        return bindings.keySet();
     }
 }

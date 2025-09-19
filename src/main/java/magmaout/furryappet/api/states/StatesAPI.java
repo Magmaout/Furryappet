@@ -1,6 +1,6 @@
 package magmaout.furryappet.api.states;
 
-import magmaout.furryappet.Furryappet;
+import magmaout.furryappet.api.APIManager;
 import magmaout.furryappet.api.BaseAPI;
 import magmaout.furryappet.api.data.PlayerContainer;
 import magmaout.furryappet.api.data.save.StatesSavedData;
@@ -11,8 +11,8 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 public class StatesAPI extends BaseAPI {
     private final PlayerContainer<States> statesContainer;
 
-    public StatesAPI() {
-        statesContainer = Furryappet.APIManager.getDataAPI().registerPlayerContainer("states", States::new);
+    public StatesAPI(APIManager api) {
+        statesContainer = api.getDataAPI().registerPlayerContainer("states", States::new);
     }
 
     public States getPlayerStates(EntityPlayerMP player) {
